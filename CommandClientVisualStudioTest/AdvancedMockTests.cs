@@ -75,25 +75,16 @@ namespace CommandClientVisualStudioTest
             byte[] metaDataLength = { 2, 0, 0, 0 };
             byte[] metaData = { 10, 0 };
 
-            
-                memStream.Write(commandBytes, 0, 4);
-                memStream.Flush();
-                memStream.Write(ipLength, 0, 4);
-                memStream.Flush();
-                memStream.Write(ip, 0, 9);
-                memStream.Flush();
-                memStream.Write(metaDataLength, 0, 4);
-                memStream.Flush();
-                memStream.Write(metaData, 0, 2);
-                memStream.Flush();
+            byte[] all = { 0, 0, 0, 0, 9, 0, 0, 0, 49, 50, 55, 46, 48, 46, 48, 46, 49, 2, 0, 0, 0, 10, 0 };
             
             CMDClient client = new CMDClient(null, "Bogus network name");
 
             // we need to set the private variable here
 
             typeof(CMDClient).GetField("networkStream", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(client, memStream);
-
             Assert.IsTrue(client.SendCommandToServerUnthreaded(command));
+            byte[] actual = memStream.ToArray();
+            CollectionAssert.AreEqual(all, actual);
             
         }
 
